@@ -7,7 +7,7 @@
     /* Gallery Mode */
     --hint-alpha: 1;                    /* Navigation hint opacity (set 0 to hide) */
     --counter-alpha: 1;                 /* Image counter opacity (set 0 to hide) */
-    --slide-distance: 75vw;             /* Horizontal travel distance for slide-in/out */
+    --slide-distance: 35vw;             /* Horizontal travel distance for slide-in/out */
     --slide-scale: 0.5;                 /* Scale at entry/exit (1 = no zoom) */
     --slide-duration: 0.3s;             /* Slide + fade animation duration */
 }
@@ -70,14 +70,32 @@ video[controls] {
     justify-content: center;
     cursor: inherit;
     transition: all var(--slide-duration) ease;
+    transform:
+        translate(-50%, -50%)
+        translateX(var(--offset-x))
+        scale(var(--scale, 1));
 }
 
-/* Initial standard position. Userful for animations. Do NOT touch */
-.panel.current {
-    transform: translate(-50%, -50%) scale(1);
+/* Default position */
+.panel.center {
+    --offset-x: 0vw;
+    --scale: 1;
     opacity: 1;
 }
 
+/* Panel positions while waiting off-screen in Gallery Mode */
+.panel.staging-left {
+    --offset-x: calc(-1 * var(--slide-distance));
+    --scale: var(--slide-scale);
+    opacity: 0;
+}
+.panel.staging-right {
+    --offset-x: var(--slide-distance);
+    --scale: var(--slide-scale);
+    opacity: 0;
+}
+
+/* Panel contents */
 #microframe .panel > * {
     min-width: 0;
     min-height: 0;
@@ -133,42 +151,6 @@ video[controls] {
 #microframe .nav-hint.show{
     opacity: var(--hint-opacity);
     transform: translate(-50%, 0);
-}
-
-/* Gallery mode - panel slide animations */
-/* ------------------------------------- */
-/* Panels are always absolutely positioned at top: 50%; left: 50%;
-   and visually centered using: translate(-50%, -50%)
-
-   All animations work by overriding that base transform.
-   DO NOT touch those classes unless you really know what you are doing */
-
-/* Incoming panels : initial (off-screen) state */
-.panel.next.from-right {
-    transform: translate(calc(var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
-    opacity: 0;
-}
-
-.panel.next.from-left {
-    transform: translate(calc(-1 * var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
-    opacity: 0;
-}
-
-/* Incoming panels : final (centered) state. Same as .panel.current but we NEED both */
-.panel.next.animate-in {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-}
-
-/* Outgoing panels : animated exit (off-screen) state*/
-.panel.current.animate-out-left {
-    transform: translate(calc(var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
-    opacity: 0;
-}
-
-.panel.current.animate-out-right {
-    transform: translate(calc(-1 * var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
-    opacity: 0;
 }
 
 

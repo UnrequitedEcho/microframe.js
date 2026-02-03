@@ -40,44 +40,20 @@ function createPanel(element) {
     return panel;
 }
 
-let animationToken = 0;
-function animatePanelChange(nextPanel, direction, microframe) {
-    const myToken = ++animationToken;
+function createEmptyPanel() {
+    const div = document.createElement('div');
+    div.className = 'panel empty';
+    return div;
+}
 
-    let current = microframe.querySelector(".panel.current");
-    let inflight = microframe.querySelector(".panel.next");
+function applyPanelClasses(panels) {
+    const classes = ['staging-left', 'center', 'staging-right'];
 
-    // If an animation is already running
-    if (inflight) {
-        // Promote inflight panel to current and remove current
-        inflight.classList.remove("next", "animate-in");
-        inflight.classList.add("current");
-        current?.remove();
-        current = inflight;
-    }
-
-    // Prepare next panel
-    nextPanel.classList.add("panel", "next", `from-${direction}`);
-    microframe.appendChild(nextPanel);
-    nextPanel.getBoundingClientRect();
-
-    // Start animation
-    nextPanel.classList.add("animate-in");
-    current?.classList.add(`animate-out-${direction}`);
-
-    nextPanel.addEventListener(
-        "transitionend",
-        (e) => {
-            // Ignore stale animations
-            if (myToken !== animationToken) return;
-            if (e.propertyName !== "transform") return;
-
-            current?.remove();
-
-            nextPanel.className = "panel current";
-        },
-        { once: true }
-    );
+    panels.forEach((panel, i) => {
+        if (!panel) return;
+        panel.className = 'panel';
+        panel.classList.add(classes[i]);
+    });
 }
 
 let handleGalleryKey = () => void 0;
@@ -113,10 +89,28 @@ function closeMicroframe() {
     document.body.style.overflow = "";
 }
 
-function initGalleryMode(microframe, media){
-    const galleryElement = media.closest(".gallery, .media-group");
-    const mediaArray = Array.from(galleryElement.querySelectorAll("img, video, .microframe")); 
-    let currentIndex = mediaArray.indexOf(media);
+function initGalleryMode(microframe, target){
+    const galleryElement = target.closest(".gallery, .media-group");
+    const galleryElements = Array.from(galleryElement.querySelectorAll("img, video, .microframe")); 
+    let currentIndex = galleryElements.indexOf(target);
+
+    // Add right and left panels in staging
+    const displayPanels = [null, null, null];
+    displayPanels[1] = microframe.querySelector('.panel.center');
+    if (currentIndex - 1 >= 0) {
+        displayPanels[0] = createPanel(galleryElements[currentIndex - 1]);
+    } else {
+        displayPanels[0] = createEmptyPanel();
+    }
+    microframe.append(displayPanels[0]);
+    if (currentIndex + 1 < galleryElements.length) {
+        displayPanels[2] = createPanel(galleryElements[currentIndex + 1]);
+    } else {
+        displayPanels[2] = createEmptyPanel();
+    }
+    microframe.append(displayPanels[2]);
+
+    applyPanelClasses(displayPanels);
 
     // Navigation hint
     const hint = document.createElement("div");
@@ -134,7 +128,7 @@ function initGalleryMode(microframe, media){
     // Counter (only in galleries)
     const counter = document.createElement("div");
     counter.className = "counter";
-    counter.textContent = `${currentIndex + 1}/${mediaArray.length}`
+    counter.textContent = `${currentIndex + 1}/${galleryElements.length}`
     microframe.appendChild(counter);
 
     // fade in counter
@@ -142,23 +136,45 @@ function initGalleryMode(microframe, media){
 
     // Helper function to create the next panel and call for 
     // an animation to show it
-    function changePanel(offset) {
-        if (offset === 0) return;
 
-        // Create new panel
-        const nextIndex = currentIndex + offset;
-        if (nextIndex < 0 || nextIndex >= mediaArray.length) return;
-        const direction = offset > 0 ? "right" : "left";
-        const nextPanel = createPanel(mediaArray[nextIndex]);
-
-        animatePanelChange(nextPanel, direction, microframe);
+    function changePanel(delta) {
+        const nextIndex = currentIndex + delta;
+        if (nextIndex < 0 || nextIndex >= galleryElements.length) return;
         currentIndex = nextIndex;
+
+        if (delta === 1) {
+            // moving left -> shift window right
+            displayPanels.shift()?.remove();
+            displayPanels.push(
+            galleryElements[currentIndex + 1]
+                ? createPanel(galleryElements[currentIndex + 1])
+                : createEmptyPanel()
+            );
+            microframe.append(displayPanels[2]);
+        } else {
+            // moving right -> shift window left
+            displayPanels.pop()?.remove();
+            displayPanels.unshift(
+            galleryElements[currentIndex - 1]
+                ? createPanel(galleryElements[currentIndex - 1])
+                : createEmptyPanel()
+            );
+            microframe.append(displayPanels[0]);
+        }
+        
+        applyPanelClasses(displayPanels);
+
+        const positions = ['staging-left', 'center', 'staging-right'];
+        displayPanels.forEach((panel, i) => {
+            panel.className = 'panel';
+            panel.classList.add(positions[i]);
+        });
 
         // Hide nav hint if still shown and update counter
         if (hint) {
             requestAnimationFrame(() => hint.classList.remove("show"));
         }
-        counter.textContent = `${currentIndex + 1}/${mediaArray.length}`;
+        counter.textContent = `${currentIndex + 1}/${galleryElements.length}`;
     }
 
     // Event Handling
@@ -208,7 +224,7 @@ function showMicroframe(media){
     const microframe = document.createElement("div"); 
     microframe.id = "microframe";
     const panel = createPanel(media);
-    panel.classList.add("current");
+    panel.classList.add("center");
     microframe.appendChild(panel);
 
     // Detect if media is in a group for gallery mode
