@@ -1,0 +1,182 @@
+/* Variables */
+/*-----------*/
+
+#microframe {
+    --anim-duration: 0.3s;              /* Fade duration for the main modal */
+    --media-size: 90;                   /* Media max size, in vw / vh */
+    /* Gallery Mode */
+    --hint-alpha: 1;                    /* Navigation hint opacity (set 0 to hide) */
+    --counter-alpha: 1;                 /* Image counter opacity (set 0 to hide) */
+    --slide-distance: 75vw;             /* Horizontal travel distance for slide-in/out */
+    --slide-scale: 0.5;                 /* Scale at entry/exit (1 = no zoom) */
+    --slide-duration: 0.3s;             /* Slide + fade animation duration */
+}
+
+/* Cursor Behavior */
+/*-----------------*/
+
+/* Default: media elements opens microframe */
+img, video, .microframe {
+    cursor: zoom-in;
+}
+/* Explicit opt-outs
+   - Elements marked as non-microframe
+   - Videos with native controls (browser owns interaction) */
+img.no-microframe,
+video.no-microframe,
+video[controls] {
+    cursor: auto;
+}
+/* Microframe overlay: clicking anywhere closes it */
+#microframe {
+    cursor: zoom-out;
+}
+/* Inside the microframe, never redefine cursor implicitly */
+#microframe .panel,
+#microframe .panel * {
+    cursor: inherit;
+}
+/* Exception: videos inside the microframe keep native behavior */
+#microframe .panel video {
+    cursor: auto;
+}
+
+/* Microframe Style */
+/*------------------*/
+
+#microframe{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+    opacity: 0;
+    transition: all var(--anim-duration) ease;
+}
+
+#microframe.show {
+    opacity: 1;
+}
+
+#microframe .panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--media-size) * 1vw);
+    height: calc(var(--media-size) * 1vh);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: inherit;
+    transition: all var(--slide-duration) ease;
+}
+
+/* Initial standard position. Userful for animations. Do NOT touch */
+.panel.current {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+#microframe .panel > * {
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: inherit;
+}
+
+#microframe .panel .legend {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    color: white;
+    pointer-events: none;
+    text-shadow: 0 0 5px rgba(0,0,0,1);
+}
+
+/* Gallery Mode : Text Overlay */
+/* --------------------------- */
+
+#microframe .nav-hint,
+#microframe .counter {
+    position: absolute;
+    bottom: 1.5rem;
+    color: white;
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+    opacity: 0;
+    transition: all var(--anim-duration) ease;
+}
+
+#microframe .counter {
+    right: 1.5rem;
+    text-align: right;
+    transform: translateY(10px);
+}
+
+#microframe .counter.show {
+    opacity: var(--counter-opacity);
+    transform: translateY(0);
+}
+
+#microframe .nav-hint {
+    left: 50%;
+    text-align: center;
+    transform: translate(-50%, 10px);
+}
+
+#microframe .nav-hint.show{
+    opacity: var(--hint-opacity);
+    transform: translate(-50%, 0);
+}
+
+/* Gallery mode - panel slide animations */
+/* ------------------------------------- */
+/* Panels are always absolutely positioned at top: 50%; left: 50%;
+   and visually centered using: translate(-50%, -50%)
+
+   All animations work by overriding that base transform.
+   DO NOT touch those classes unless you really know what you are doing */
+
+/* Incoming panels : initial (off-screen) state */
+.panel.next.from-right {
+    transform: translate(calc(var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
+    opacity: 0;
+}
+
+.panel.next.from-left {
+    transform: translate(calc(-1 * var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
+    opacity: 0;
+}
+
+/* Incoming panels : final (centered) state. Same as .panel.current but we NEED both */
+.panel.next.animate-in {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Outgoing panels : animated exit (off-screen) state*/
+.panel.current.animate-out-left {
+    transform: translate(calc(var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
+    opacity: 0;
+}
+
+.panel.current.animate-out-right {
+    transform: translate(calc(-1 * var(--slide-distance) - 50%), -50%) scale(var(--slide-scale));
+    opacity: 0;
+}
+
+
+/* Accessibility: respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    #microframe,
+    #microframe * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
