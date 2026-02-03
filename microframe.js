@@ -1,35 +1,44 @@
+/**
+ * Microframe
+ * ----------
+ * Lightweight modal for displaying a single element (image, video, or generic content)
+ * in an overlay. Handles scroll locking, fade-in/out, and basic keyboard interactions.
+ */
 class Microframe {
 
   constructor(element) {
-    this.targetElement = element;
+    this.targetElement = element; // Element to show in the microframe
   }
 
   open(){
-    // Scroll Lock
+    // Lock scrolling
     document.body.style.height = "100%";
     document.body.style.overflow = "hidden";
 
+    // Create microframe main container and center panel
     this.microframe = document.createElement("div"); 
     this.microframe.id = "microframe";
     this.panel = Microframe.createPanel(this.targetElement);
     this.panel.classList.add("center");
     this.microframe.appendChild(this.panel);
 
+    // Bind event listeners
     this.onKeyDownBound = this.onKeyDown.bind(this);
     this.onClickBound = this.close.bind(this);
     document.addEventListener("keydown", this.onKeyDownBound);
     this.microframe.addEventListener("click", this.onClickBound);
 
+    // Add to DOM and trigger show animation
     document.body.appendChild(this.microframe);
-    this.microframe.getBoundingClientRect();
+    this.microframe.getBoundingClientRect(); // Force reflow
     this.microframe.classList.add("show");
   }
 
   close(){
-    // Remove event listeners
+    // Remove listeners
     document.removeEventListener("keydown", this.onKeyDownBound);
 
-    // fade out microframe then remove it from DOM
+    // Fade out and remove from DOM
     this.microframe.classList.remove("show");
     this.microframe.addEventListener("transitionend", () => {this.microframe.remove();}, {once: true});
 
@@ -42,27 +51,28 @@ class Microframe {
     switch (e.key) {
     case "Escape":
       e.preventDefault();
-      this.close();
+      this.close(); // Close on Escape
       break;
     case "Tab":
-      e.preventDefault();
+      e.preventDefault(); // Prevent focus loss
       break;
     case "ArrowLeft":
     case "ArrowRight":
     case "ArrowUp":
     case "ArrowDown":
-      e.preventDefault();
+      e.preventDefault(); // Prevent scrolling of main page elements
       break;
     }
   }
 
+  // Creates a panel for a given element or empty panel
   static createPanel(element = null) {
     const panel = document.createElement("div");
     panel.className = "panel";
 
     if (!element) return panel; // Empty panel
 
-    // Clone the element so we don't move it from the DOM
+    // Clone the element so original DOM is untouched
     const media = element.cloneNode(true);
 
     // Handle media-specific attributes
@@ -74,15 +84,13 @@ class Microframe {
       media.controls = true;
       media.pause?.();
     } else {
-      // Non-media content: just clone and append
-      panel.appendChild(media);
+      panel.appendChild(media); // Non-media content
       return panel;
     }
 
-    // Append the media
     panel.appendChild(media);
 
-    // Create a legend if alt or title exists
+    // Add legend if alt or title exists
     const legendText = (media.alt || media.title)?.trim();
     if (legendText) {
       const legend = document.createElement("div");
@@ -95,10 +103,19 @@ class Microframe {
   }
 }
 
+
+/**
+ * MicroframeGallery
+ * -----------------
+ * Extends Microframe to display a gallery of content elements in an overlay.
+ * Maintains a 3-panel sliding window of CSS Classes [staging-left, center, staging-right].
+ * Animations are handled by the browser (CSS)
+ */
 class MicroframeGallery extends Microframe{
 
   constructor(element){
     super(element);
+    // Collect all media elements in the gallery container
     const galleryElement = this.targetElement.closest(".gallery, .media-group");
     this.galleryElements = Array.from(galleryElement.querySelectorAll("img, video, .microframe"));
     this.currentIndex = this.galleryElements.indexOf(this.targetElement);
@@ -107,11 +124,14 @@ class MicroframeGallery extends Microframe{
   open(){
     super.open();
 
+    // Helper: create a panel for a side index or empty panel
     const createSidePanel = (index) => (
       index >= 0 && index < this.galleryElements.length
         ? MicroframeGallery.createPanel(this.galleryElements[index])
         : MicroframeGallery.createPanel()
     );
+
+    // Initialize Array representing the 3-panel sliding window and add them to the DOM
     this.displayPanels = [
         createSidePanel(this.currentIndex - 1),
         this.panel,
@@ -121,15 +141,18 @@ class MicroframeGallery extends Microframe{
     this.microframe.appendChild(this.displayPanels[2]);
     this.microframe.insertBefore(this.displayPanels[0], this.displayPanels[1]);
 
+    // Show navigation hint and counter
     this.initNavHint();
     this.initCounter();
 
-    this.onKeyTouchStartBound = this.onTouchStart.bind(this);
-    this.onKeyTouchEndBound = this.onTouchEnd.bind(this);
+    // Bind touch events for swipe navigation
+    this.onTouchStartBound = this.onTouchStart.bind(this);
+    this.onTouchEndBound = this.onTouchEnd.bind(this);
     this.microframe.addEventListener("touchstart", this.onTouchStartBound);
     this.microframe.addEventListener("touchend", this.onTouchEndBound);
   }
 
+  // Show temporary navigation hint for keyboard or touch
   initNavHint(){
     this.hint = document.createElement("div");
     this.hint.className = "nav-hint";
@@ -143,6 +166,7 @@ class MicroframeGallery extends Microframe{
     setTimeout(() => this.hint.classList.remove("show"), 5000);
   }
 
+  // Display counter showing current item / total
   initCounter(){
     this.counter = document.createElement("div");
     this.counter.className = "counter";
@@ -152,18 +176,21 @@ class MicroframeGallery extends Microframe{
     requestAnimationFrame(() => this.counter.classList.add("show"));
   }
 
+  // Handle gallery-specific keydown events (extends base Microframe keys handling)
   onKeyDown(e){
     super.onKeyDown(e);
     if (e.key === "ArrowRight") this.shiftGallery(1);
     if (e.key === "ArrowLeft") this.shiftGallery(-1);
   }
 
+  // Record initial touch position for swipe
   onTouchStart(e){
     const t = e.touches[0];
     this.touchStartX = t.clientX;
     this.touchStartY = t.clientY;
   }
 
+  // Detect swipe direction and trigger gallery shift
   onTouchEnd(e){
     const t = e.changedTouches[0];
     const dx = t.clientX - this.touchStartX;
@@ -174,6 +201,7 @@ class MicroframeGallery extends Microframe{
     }
   }
 
+  // Apply CSS classes to panels for sliding layout (trigger animation)
   applyPanelClasses(){
     const classes = ['staging-left', 'center', 'staging-right'];
 
@@ -184,6 +212,7 @@ class MicroframeGallery extends Microframe{
     });
   }
 
+  // Shift sliding window left or right when navigating
   shiftGallery(delta){
     const nextIndex = this.currentIndex + delta;
     if (nextIndex < 0 || nextIndex >= this.galleryElements.length) return;
@@ -218,19 +247,16 @@ class MicroframeGallery extends Microframe{
 }
 
 export function initMicroframe() {
-  document.addEventListener("click", function (e) {
-    if (document.getElementById("microframe")) return;
-    const target = e.target.closest("img, video, .microframe");
-    if (target && !target.classList.contains("no-microframe")){
+  document.addEventListener("click", function (e) { // User clicks
+    if (document.getElementById("microframe")) return; // Microframe is already open: exit
+    const target = e.target.closest("img, video, .microframe"); 
+    if (target && !target.classList.contains("no-microframe")){ // Click target is microframe-able
       e.preventDefault();
       let mf;
-
-      mf = target.closest(".gallery, .media-group")
+      mf = target.closest(".gallery, .media-group") // Click target is in a gallery
         ? new MicroframeGallery(target)
         : new Microframe(target);
-
       mf.open();
-
     }
   });
 }
