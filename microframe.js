@@ -1,242 +1,236 @@
-function createPanel(element = null) {
-    const panel = document.createElement("div");
-    panel.className = "panel";
+class Microframe {
 
-    if (!element){
-        return panel
-    } 
+  constructor(element) {
+    this.targetElement = element;
+  }
 
-    // Non-media content: just clone and append
-    if (element.tagName !== "IMG" && element.tagName !== "VIDEO") {
-        panel.append(element.cloneNode(true));
-        return panel;
-    }
-
-    // Media content (IMG or VIDEO)
-    const media = element.cloneNode(true);
-
-    if (media.tagName === "IMG") {
-        // Force browser to consider large resolution
-        media.sizes = "100vw";
-        media.decoding = "async";
-        media.loading = "eager";
-    }
-
-    if (media.tagName === "VIDEO") {
-        media.controls = true;
-        media.pause?.();
-    }
-
-    panel.append(media);
-
-    // Create legend if alt or title exists and is non-empty
-    const altText = media.alt?.trim();
-    const titleText = media.title?.trim();
-    const legendText = altText || titleText;
-
-    if (legendText) {
-        const legend = document.createElement("div");
-        legend.className = "legend";
-        legend.textContent = legendText;
-        panel.append(legend);
-    }
-
-    return panel;
-}
-
-function enterGalleryMode(microframe, target){
-    const galleryElement = target.closest(".gallery, .media-group");
-    const galleryElements = Array.from(galleryElement.querySelectorAll("img, video, .microframe")); 
-    let currentIndex = galleryElements.indexOf(target);
-
-    function applyPanelClasses(panels) {
-        const classes = ['staging-left', 'center', 'staging-right'];
-
-        panels.forEach((panel, i) => {
-            if (!panel) return;
-            panel.className = 'panel';
-            panel.classList.add(classes[i]);
-        });
-    }
-
-    function shiftGallery(delta) {
-        const nextIndex = currentIndex + delta;
-        if (nextIndex < 0 || nextIndex >= galleryElements.length) return;
-        currentIndex = nextIndex;
-
-        if (delta === 1) {
-            // moving left -> shift window right
-            displayPanels.shift()?.remove();
-            displayPanels.push(
-            galleryElements[currentIndex + 1]
-                ? createPanel(galleryElements[currentIndex + 1])
-                : createPanel()
-            );
-            microframe.append(displayPanels[2]);
-        } else {
-            // moving right -> shift window left
-            displayPanels.pop()?.remove();
-            displayPanels.unshift(
-            galleryElements[currentIndex - 1]
-                ? createPanel(galleryElements[currentIndex - 1])
-                : createPanel()
-            );
-            microframe.append(displayPanels[0]);
-        }
-
-        applyPanelClasses(displayPanels);
-
-        // Hide nav hint if still shown and update counter
-        if (hint) {
-            requestAnimationFrame(() => hint.classList.remove("show"));
-        }
-        counter.textContent = `${currentIndex + 1}/${galleryElements.length}`;
-    }
-
-    // Add right and left panels in staging
-    const displayPanels = [null, null, null];
-    displayPanels[1] = microframe.querySelector('.panel.center');
-    if (currentIndex - 1 >= 0) {
-        displayPanels[0] = createPanel(galleryElements[currentIndex - 1]);
-    } else {
-        displayPanels[0] = createPanel();
-    }
-    microframe.append(displayPanels[0]);
-    if (currentIndex + 1 < galleryElements.length) {
-        displayPanels[2] = createPanel(galleryElements[currentIndex + 1]);
-    } else {
-        displayPanels[2] = createPanel();
-    }
-    microframe.append(displayPanels[2]);
-
-    applyPanelClasses(displayPanels);
-
-    // Navigation hint
-    const hint = document.createElement("div");
-    hint.className = "nav-hint";
-
-    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-    const hintText = isTouch ? "Swipe left/right to navigate" : "Use ← / → to navigate";
-    hint.textContent = hintText;
-    microframe.appendChild(hint);
-
-    // fade in and auto fade out hint after delay
-    requestAnimationFrame(() => hint.classList.add("show"));
-    setTimeout(() => hint.classList.remove("show"), 5000);
-
-    // Counter (only in galleries)
-    const counter = document.createElement("div");
-    counter.className = "counter";
-    counter.textContent = `${currentIndex + 1}/${galleryElements.length}`
-    microframe.appendChild(counter);
-
-    // fade in counter
-    requestAnimationFrame(() => counter.classList.add("show"));
-
-    // Gallery-specific event Handling
-    // Keyboard events : Esc, Left & Right Arrow
-    function onGalleryKey(key) {
-        if (key === "ArrowRight") shiftGallery(1);
-        if (key === "ArrowLeft") shiftGallery(-1);
-    }
-
-    function onGallerySwipe(dx, dy) {
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
-            if (dx < 0) {shiftGallery(1)} else {shiftGallery(-1)}
-        }
-    }
-
-    return { onKey: onGalleryKey, onSwipe: onGallerySwipe};
-}
-
-function openMicroframe(media){
-    // Prevent multiple microframes
-    if (document.getElementById("microframe")) return;
-
-    function closeMicroframe() {
-        document.removeEventListener("keydown", onKeyDown);
-        // fade out microframe then remove it from dom
-        microframe.classList.remove("show");
-        microframe.addEventListener("transitionend", () => {microframe.remove();}, {once: true});
-
-        // Restore scroll
-        document.body.style.height = "";
-        document.body.style.overflow = "";
-    }
-
-    // Scroll lock
+  open(){
+    // Scroll Lock
     document.body.style.height = "100%";
     document.body.style.overflow = "hidden";
 
-    // Build overlay structure: dom hierarchy is 
-    // microframe       - fullscreen overlay
-    //   └── panel      - vertical layout container, centered on screen
-    //       ├── img    - current image
-    //       └── legend - alt text / caption
-    const microframe = document.createElement("div"); 
-    microframe.id = "microframe";
-    const panel = createPanel(media);
-    panel.classList.add("center");
-    microframe.appendChild(panel);
+    this.microframe = document.createElement("div"); 
+    this.microframe.id = "microframe";
+    this.panel = Microframe.createPanel(this.targetElement);
+    this.panel.classList.add("center");
+    this.microframe.appendChild(this.panel);
 
-    // Detect if media is in a group for gallery mode
-    let gallery = null;
-    if (!!media.closest(".gallery, .media-group")){
-        gallery = enterGalleryMode(microframe, media);
+    this.onKeyDownBound = this.onKeyDown.bind(this);
+    this.onClickBound = this.close.bind(this);
+    document.addEventListener("keydown", this.onKeyDownBound);
+    this.microframe.addEventListener("click", this.onClickBound);
+
+    document.body.appendChild(this.microframe);
+    this.microframe.getBoundingClientRect();
+    this.microframe.classList.add("show");
+  }
+
+  close(){
+    // Remove event listeners
+    document.removeEventListener("keydown", this.onKeyDownBound);
+
+    // fade out microframe then remove it from DOM
+    this.microframe.classList.remove("show");
+    this.microframe.addEventListener("transitionend", () => {this.microframe.remove();}, {once: true});
+
+    // Restore scroll
+    document.body.style.height = "";
+    document.body.style.overflow = "";
+  }
+
+  onKeyDown(e){
+    switch (e.key) {
+    case "Escape":
+      e.preventDefault();
+      this.close();
+      break;
+    case "Tab":
+      e.preventDefault();
+      break;
+    case "ArrowLeft":
+    case "ArrowRight":
+    case "ArrowUp":
+    case "ArrowDown":
+      e.preventDefault();
+      break;
+    }
+  }
+
+  static createPanel(element = null) {
+    const panel = document.createElement("div");
+    panel.className = "panel";
+
+    if (!element) return panel; // Empty panel
+
+    // Clone the element so we don't move it from the DOM
+    const media = element.cloneNode(true);
+
+    // Handle media-specific attributes
+    if (media.tagName === "IMG") {
+      media.sizes = "100vw";
+      media.decoding = "async";
+      media.loading = "eager";
+    } else if (media.tagName === "VIDEO") {
+      media.controls = true;
+      media.pause?.();
+    } else {
+      // Non-media content: just clone and append
+      panel.appendChild(media);
+      return panel;
     }
 
-    // Event Handling
-    // Key Events
-    function onKeyDown(e) {
-        switch (e.key) {
-            case "Escape":
-                e.preventDefault();
-                closeMicroframe();
-                break;
-            case "Tab":
-                e.preventDefault();
-                break;
-            case "ArrowLeft":
-            case "ArrowRight":
-            case "ArrowUp":
-            case "ArrowDown":
-                e.preventDefault();
-                break;
-        }
-        if (gallery) gallery.onKey(e.key);
+    // Append the media
+    panel.appendChild(media);
+
+    // Create a legend if alt or title exists
+    const legendText = (media.alt || media.title)?.trim();
+    if (legendText) {
+      const legend = document.createElement("div");
+      legend.className = "legend";
+      legend.textContent = legendText;
+      panel.appendChild(legend);
     }
-    document.addEventListener("keydown", onKeyDown);
 
-    // Click event: close microframe on click
-    microframe.addEventListener("click", closeMicroframe);
+    return panel;
+  }
+}
 
-    // Swipe Events
-    let startX = 0, startY = 0;
-    microframe.addEventListener("touchstart", e => {
-        const t = e.touches[0];
-        startX = t.clientX;
-        startY = t.clientY;
+class MicroframeGallery extends Microframe{
+
+  constructor(element){
+    super(element);
+    const galleryElement = this.targetElement.closest(".gallery, .media-group");
+    this.galleryElements = Array.from(galleryElement.querySelectorAll("img, video, .microframe"));
+    this.currentIndex = this.galleryElements.indexOf(this.targetElement);
+  }
+
+  open(){
+    super.open();
+
+    const createSidePanel = (index) => (
+      index >= 0 && index < this.galleryElements.length
+        ? MicroframeGallery.createPanel(this.galleryElements[index])
+        : MicroframeGallery.createPanel()
+    );
+    this.displayPanels = [
+        createSidePanel(this.currentIndex - 1),
+        this.panel,
+        createSidePanel(this.currentIndex + 1)
+    ];
+    this.applyPanelClasses();
+    this.microframe.appendChild(this.displayPanels[2]);
+    this.microframe.insertBefore(this.displayPanels[0], this.displayPanels[1]);
+
+    this.initNavHint();
+    this.initCounter();
+
+    this.onKeyTouchStartBound = this.onTouchStart.bind(this);
+    this.onKeyTouchEndBound = this.onTouchEnd.bind(this);
+    this.microframe.addEventListener("touchstart", this.onTouchStartBound);
+    this.microframe.addEventListener("touchend", this.onTouchEndBound);
+  }
+
+  initNavHint(){
+    this.hint = document.createElement("div");
+    this.hint.className = "nav-hint";
+
+    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    const hintText = isTouch ? "Swipe left/right to navigate" : "Use ← / → to navigate";
+    this.hint.textContent = hintText;
+    this.microframe.appendChild(this.hint);
+
+    requestAnimationFrame(() => this.hint.classList.add("show"));
+    setTimeout(() => this.hint.classList.remove("show"), 5000);
+  }
+
+  initCounter(){
+    this.counter = document.createElement("div");
+    this.counter.className = "counter";
+    this.counter.textContent = `${this.currentIndex + 1}/${this.galleryElements.length}`
+    this.microframe.appendChild(this.counter);
+
+    requestAnimationFrame(() => this.counter.classList.add("show"));
+  }
+
+  onKeyDown(e){
+    super.onKeyDown(e);
+    if (e.key === "ArrowRight") this.shiftGallery(1);
+    if (e.key === "ArrowLeft") this.shiftGallery(-1);
+  }
+
+  onTouchStart(e){
+    const t = e.touches[0];
+    this.touchStartX = t.clientX;
+    this.touchStartY = t.clientY;
+  }
+
+  onTouchEnd(e){
+    const t = e.changedTouches[0];
+    const dx = t.clientX - this.touchStartX;
+    const dy = t.clientY - this.touchStartY;
+
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        if (dx < 0) {this.shiftGallery(1)} else {this.shiftGallery(-1)}
+    }
+  }
+
+  applyPanelClasses(){
+    const classes = ['staging-left', 'center', 'staging-right'];
+
+    this.displayPanels.forEach((panel, i) => {
+      if (!panel) return;
+      panel.className = 'panel';
+      panel.classList.add(classes[i]);
     });
-    microframe.addEventListener("touchend", e => {
-        const t = e.changedTouches[0];
-        const dx = t.clientX - startX;
-        const dy = t.clientY - startY;
+  }
 
-        if (gallery) gallery.onSwipe(dx, dy);
-    });
+  shiftGallery(delta){
+    const nextIndex = this.currentIndex + delta;
+    if (nextIndex < 0 || nextIndex >= this.galleryElements.length) return;
+    this.currentIndex = nextIndex;
 
-    // Finally show microframe
-    document.body.appendChild(microframe);
-    microframe.getBoundingClientRect();
-    microframe.classList.add("show");
+    if (delta === 1) {
+      // moving left -> shift window right
+      this.displayPanels.shift()?.remove();
+      this.displayPanels.push(
+        this.galleryElements[this.currentIndex + 1]
+          ? MicroframeGallery.createPanel(this.galleryElements[this.currentIndex + 1])
+          : MicroframeGallery.createPanel()
+        );
+      this.microframe.appendChild(this.displayPanels[2]);
+    } else {
+      // moving right -> shift window left
+      this.displayPanels.pop()?.remove();
+      this.displayPanels.unshift(
+        this.galleryElements[this.currentIndex - 1]
+          ? MicroframeGallery.createPanel(this.galleryElements[this.currentIndex - 1])
+          : MicroframeGallery.createPanel()
+        );
+      this.microframe.insertBefore(this.displayPanels[0], this.displayPanels[1]);
+    }
+
+    this.applyPanelClasses();
+
+    // Hide nav hint if still shown and update counter
+    if (this.hint) this.hint.classList.remove("show");
+    this.counter.textContent = `${this.currentIndex + 1}/${this.galleryElements.length}`;
+  }
 }
 
 export function initMicroframe() {
-    document.addEventListener("click", function (e) {
-        const target = e.target.closest("img, video, .microframe");
-        if (target && !target.classList.contains("no-microframe")){
-            e.preventDefault();
-            openMicroframe(target);
-        }
-    });
+  document.addEventListener("click", function (e) {
+    if (document.getElementById("microframe")) return;
+    const target = e.target.closest("img, video, .microframe");
+    if (target && !target.classList.contains("no-microframe")){
+      e.preventDefault();
+      let mf;
+
+      mf = target.closest(".gallery, .media-group")
+        ? new MicroframeGallery(target)
+        : new Microframe(target);
+
+      mf.open();
+
+    }
+  });
 }
