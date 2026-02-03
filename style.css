@@ -33,6 +33,7 @@ pre code {
     gap: 1rem;
     justify-content: flex-start;
     align-items: center;
+    padding: 1rem 0px;
 }
 
 .card {
@@ -52,6 +53,7 @@ pre code {
     box-sizing: border-box;
     aspect-ratio: 1 / 1;
     margin-bottom: 0;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .card h3 {
@@ -60,4 +62,37 @@ pre code {
 
 .card p {
     text-align: justify;
+}
+
+.anim-demo-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #44475a;
+  padding: 1rem;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.preset-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.preset-buttons button {
+    flex: 1;
+}
+
+.css-editor {
+  font-family: monospace;
+  resize: none;
+  overflow: hidden;
+}
+
+.anim-demo-controls .slideshow .card,
+.anim-demo-controls .slideshow img {
+    flex: 0 0 200px;
+    box-sizing: border-box;
+    aspect-ratio: 1 / 1;
+    margin-bottom: 0;
 }

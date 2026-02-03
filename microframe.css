@@ -9,15 +9,15 @@
   /* Gallery UI */
   --hint-alpha: 1;                    /* Navigation hint opacity (0 to hide) */
   --counter-alpha: 1;                 /* Image counter opacity (0 to hide) */
-  --slide-duration: 1s;               /* Duration of slide + fade between panels */
+  --slide-duration: 0.3s;               /* Duration of slide + fade between panels */
 
   /* Side panel transforms
    These define the resting position of the previous / next panels */
-  --panel-offset-x: 30vw;             /* Horizontal offset (0 = centered) */
+  --panel-offset-x: 50vw;             /* Horizontal offset (0 = centered) */
   --panel-offset-y: 0%;               /* Vertical offset (0 = centered) */
-  --panel-scale: 1;                   /* Scale factor (1 = no scaling) */
+  --panel-scale: 0.8;                   /* Scale factor (1 = no scaling) */
   --panel-rot: 0deg;                  /* 2D rotation (0deg = none) */
-  --panel-tilt: 90deg;                /* 3D tilt angle (coverflow-style effect) */
+  --panel-tilt: 0deg;                /* 3D tilt angle (coverflow-style effect) */
 }
 
 /* Cursor Behavior */

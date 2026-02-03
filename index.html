@@ -204,6 +204,48 @@ function quickSort(arr, low, high) {
 	<img src="images/img5-600w.jpg"/>
 </div>
 
+<h2>Customizable Slide Animations</h2>
+	<p>In gallery mode, Microframe.js initializes three panels: the active one centered in the viewport, and two hidden panels positioned on each side. The initial position of these hidden panels is defined entirely in CSS. Navigation animations are triggered by swapping CSS classes, letting the browser handle the transitions using GPU-accelerated transforms. There are no JavaScript-driven animations involved.</p>
+	<p>Because of this design, customizing the default animation is straightforward. You can directly edit
+	<code>.panel.staging-left</code> and <code>.panel.staging-right</code>, or, for simpler tweaks, adjust the provided CSS custom properties to quickly experiment with different effects.</p>
+	<p>The modifications you make below will apply to the whole page. To get back to the defaults, press the <code>Default</code> button.</p>
+
+	<section class="anim-demo-controls">
+		<div class="preset-buttons">
+			<button data-preset="default">Default</button>
+			<button data-preset="rotation">Slight Rotation</button>
+			<button data-preset="rotation3d">Subtle 3D Rotation</button>
+			<button data-preset="coverflow">Cover Flow</button>
+			<button data-preset="crazy">Crazy !</button>
+		</div>
+
+		<textarea class="css-editor" spellcheck="false" rows="8">
+#microframe {
+  --slide-duration: 1s;
+  --panel-offset-x: 30vw;
+  --panel-offset-y: 0%;
+  --panel-scale: 1;
+  --panel-rot: 0deg;
+  --panel-tilt: 45deg;
+}
+		</textarea>
+
+		<div class="slideshow gallery">
+			<div class="card microframe">
+				<p>Click here (or on any other gallery) to open microframe and see your animation settings !</p>
+			</div>
+			<img src="images/img5-600w.jpg" alt="Images obviously still work very well. "/>
+			<img src="images/img1.jpg"/>
+			<img src="images/img2.jpg"/>
+			<img src="images/img3.jpg"/>
+			<img src="images/img4-1200w.jpg"/>
+			<img src="images/img5-600w.jpg"/>
+		</div>
+
+		<script src="./anim-demo.js"></script>
+	</section>
+
+
 
 <script type="module">
     import { initMicroframe } from './microframe.js';
@@ -214,6 +256,7 @@ function quickSort(arr, low, high) {
 
 </body>
 </html>
+
 
 <!--
 https://unsplash.com/@landolakesinc
