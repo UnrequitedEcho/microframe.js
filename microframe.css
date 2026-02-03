@@ -2,14 +2,22 @@
 /*-----------*/
 
 #microframe {
-    --anim-duration: 0.3s;              /* Fade duration for the main modal */
-    --media-size: 90;                   /* Media max size, in vw / vh */
-    /* Gallery Mode */
-    --hint-alpha: 1;                    /* Navigation hint opacity (set 0 to hide) */
-    --counter-alpha: 1;                 /* Image counter opacity (set 0 to hide) */
-    --slide-distance: 35vw;             /* Horizontal travel distance for slide-in/out */
-    --slide-scale: 0.5;                 /* Scale at entry/exit (1 = no zoom) */
-    --slide-duration: 0.3s;             /* Slide + fade animation duration */
+  /* Modal */
+  --anim-duration: 0.3s;              /* Fade duration for opening / closing */
+  --media-size: 90;                   /* Max media size (in vw / vh) */
+
+  /* Gallery UI */
+  --hint-alpha: 1;                    /* Navigation hint opacity (0 to hide) */
+  --counter-alpha: 1;                 /* Image counter opacity (0 to hide) */
+  --slide-duration: 1s;               /* Duration of slide + fade between panels */
+
+  /* Side panel transforms
+   These define the resting position of the previous / next panels */
+  --panel-offset-x: 30vw;             /* Horizontal offset (0 = centered) */
+  --panel-offset-y: 0%;               /* Vertical offset (0 = centered) */
+  --panel-scale: 1;                   /* Scale factor (1 = no scaling) */
+  --panel-rot: 0deg;                  /* 2D rotation (0deg = none) */
+  --panel-tilt: 90deg;                /* 3D tilt angle (coverflow-style effect) */
 }
 
 /* Cursor Behavior */
@@ -17,103 +25,122 @@
 
 /* Default: media elements opens microframe */
 img, video, .microframe {
-    cursor: zoom-in;
+  cursor: zoom-in;
 }
 /* Explicit opt-outs
    - Elements marked as non-microframe
    - Videos with native controls (browser owns interaction) */
-img.no-microframe,
-video.no-microframe,
-video[controls] {
+   img.no-microframe,
+   video.no-microframe,
+   video[controls] {
     cursor: auto;
-}
+  }
 /* Microframe overlay: clicking anywhere closes it */
 #microframe {
-    cursor: zoom-out;
+  cursor: zoom-out;
 }
 /* Inside the microframe, never redefine cursor implicitly */
 #microframe .panel,
 #microframe .panel * {
-    cursor: inherit;
+  cursor: inherit;
 }
 /* Exception: videos inside the microframe keep native behavior */
 #microframe .panel video {
-    cursor: auto;
+  cursor: auto;
 }
 
 /* Microframe Style */
 /*------------------*/
 
 #microframe{
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.85);
-    overflow: hidden;
-    opacity: 0;
-    transition: all var(--anim-duration) ease;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  opacity: 0;
+  perspective: 2000px; /* Change this for more/less perspective */
+  transition: 
+    transform var(--anim-duration) ease,
+    opacity var(--anim-duration) ease;
 }
 
 #microframe.show {
-    opacity: 1;
+  opacity: 1;
 }
 
 #microframe .panel {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: calc(var(--media-size) * 1vw);
-    height: calc(var(--media-size) * 1vh);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: inherit;
-    transition: all var(--slide-duration) ease;
-    transform:
-        translate(-50%, -50%)
-        translateX(var(--offset-x))
-        scale(var(--scale, 1));
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--media-size) * 1vw);
+  height: calc(var(--media-size) * 1vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: inherit;
+  transition: 
+    transform var(--slide-duration) ease,
+    opacity var(--slide-duration) ease;
+  transform:
+    translate(-50%, -50%)
+    translate(var(--offset-x, 50vw), var(--offset-y, 0))
+    rotate(var(--rot, 0deg))
+    rotate3d(0, 1, 0, var(--tilt, 0deg))
+    scale(var(--scale, 1));
 }
 
 /* Default position */
 .panel.center {
-    --offset-x: 0vw;
-    --scale: 1;
-    opacity: 1;
+  opacity: 1;
+  z-index: 2;
+  --offset-x: 0vw;
+  --offset-y: 0%;
+  --rot: 0deg;
+  --tilt: 0deg;
+  --scale: 1;
 }
 
 /* Panel positions while waiting off-screen in Gallery Mode */
+.panel.staging-left,
+.panel.staging-right {
+  opacity: 0;
+  z-index: 1;
+  --offset-y: var(--panel-offset-y);
+}
 .panel.staging-left {
-    --offset-x: calc(-1 * var(--slide-distance));
-    --scale: var(--slide-scale);
-    opacity: 0;
+  --offset-x: calc(-1 * var(--panel-offset-x));
+  --rot: calc(-1 * var(--panel-rot));
+  --tilt: var(--panel-tilt);
+  --scale: var(--panel-scale);
 }
 .panel.staging-right {
-    --offset-x: var(--slide-distance);
-    --scale: var(--slide-scale);
-    opacity: 0;
+  --offset-x: var(--panel-offset-x);
+  --rot: var(--panel-rot);
+  --tilt: calc(-1 * var(--panel-tilt));
+  --scale: var(--panel-scale);
 }
 
 /* Panel contents */
 #microframe .panel > * {
-    min-width: 0;
-    min-height: 0;
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    cursor: inherit;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  cursor: inherit;
 }
 
 #microframe .panel .legend {
-    width: 100%;
-    text-align: center;
-    margin-top: 10px;
-    color: white;
-    pointer-events: none;
-    text-shadow: 0 0 5px rgba(0,0,0,1);
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  color: white;
+  pointer-events: none;
+  text-shadow: 0 0 5px rgba(0,0,0,1);
 }
 
 /* Gallery Mode : Text Overlay */
@@ -121,44 +148,44 @@ video[controls] {
 
 #microframe .nav-hint,
 #microframe .counter {
-    position: absolute;
-    bottom: 1.5rem;
-    color: white;
-    white-space: nowrap;
-    pointer-events: none;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 1);
-    opacity: 0;
-    transition: all var(--anim-duration) ease;
+  position: absolute;
+  bottom: 1.5rem;
+  color: white;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+  opacity: 0;
+  transition: all var(--anim-duration) ease;
 }
 
 #microframe .counter {
-    right: 1.5rem;
-    text-align: right;
-    transform: translateY(10px);
+  right: 1.5rem;
+  text-align: right;
+  transform: translateY(10px);
 }
 
 #microframe .counter.show {
-    opacity: var(--counter-opacity);
-    transform: translateY(0);
+  opacity: var(--counter-opacity);
+  transform: translateY(0);
 }
 
 #microframe .nav-hint {
-    left: 50%;
-    text-align: center;
-    transform: translate(-50%, 10px);
+  left: 50%;
+  text-align: center;
+  transform: translate(-50%, 10px);
 }
 
 #microframe .nav-hint.show{
-    opacity: var(--hint-opacity);
-    transform: translate(-50%, 0);
+  opacity: var(--hint-opacity);
+  transform: translate(-50%, 0);
 }
 
 
 /* Accessibility: respect reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
-    #microframe,
-    #microframe * {
-        transition: none !important;
-        animation: none !important;
-    }
+  #microframe,
+  #microframe * {
+    transition: none !important;
+    animation: none !important;
+  }
 }
