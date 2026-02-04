@@ -139,7 +139,7 @@ class MicroframeGallery extends Microframe{
     ];
     this.applyPanelClasses();
     this.microframe.appendChild(this.displayPanels[2]);
-    this.microframe.insertBefore(this.displayPanels[0], this.displayPanels[1]);
+    this.microframe.appendChild(this.displayPanels[0]);
 
     // Show navigation hint and counter
     this.initNavHint();
@@ -204,10 +204,9 @@ class MicroframeGallery extends Microframe{
   // Apply CSS classes to panels for sliding layout (trigger animation)
   applyPanelClasses(){
     const classes = ['staging-left', 'center', 'staging-right'];
-
     this.displayPanels.forEach((panel, i) => {
       if (!panel) return;
-      panel.className = 'panel';
+      panel.classList.remove('staging-left', 'center', 'staging-right');
       panel.classList.add(classes[i]);
     });
   }
@@ -218,24 +217,32 @@ class MicroframeGallery extends Microframe{
     if (nextIndex < 0 || nextIndex >= this.galleryElements.length) return;
     this.currentIndex = nextIndex;
 
+    // Append panels to the DOM in a hidden state, before they are assigned
+    // their style with applyPanelClasses
+    const appendPanel = (panel) => {
+      panel.style.opacity = "0";
+      this.microframe.appendChild(panel);
+      panel.style.opacity = "";
+    };
+
     if (delta === 1) {
-      // moving left -> shift window right
+      // Move left -> shift window right
       this.displayPanels.shift()?.remove();
       this.displayPanels.push(
         this.galleryElements[this.currentIndex + 1]
           ? MicroframeGallery.createPanel(this.galleryElements[this.currentIndex + 1])
           : MicroframeGallery.createPanel()
         );
-      this.microframe.appendChild(this.displayPanels[2]);
+      appendPanel(this.displayPanels[2]);
     } else {
-      // moving right -> shift window left
+      // Move right -> shift window left
       this.displayPanels.pop()?.remove();
       this.displayPanels.unshift(
         this.galleryElements[this.currentIndex - 1]
           ? MicroframeGallery.createPanel(this.galleryElements[this.currentIndex - 1])
           : MicroframeGallery.createPanel()
         );
-      this.microframe.insertBefore(this.displayPanels[0], this.displayPanels[1]);
+      appendPanel(this.displayPanels[0]);
     }
 
     this.applyPanelClasses();

@@ -105,7 +105,7 @@ img, video, .microframe {
 /* Panel positions while waiting off-screen in Gallery Mode */
 .panel.staging-left,
 .panel.staging-right {
-  opacity: 0;
+  opacity: 0.5;
   z-index: 1;
   --offset-y: var(--panel-offset-y);
 }

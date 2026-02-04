@@ -35,6 +35,10 @@ pre code {
     text-align: center;
 }
 
+.card img, .card video {
+    
+}
+
 .wall {
     column-width: 400px;
     columns-gap: 1rem;
