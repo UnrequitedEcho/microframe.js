@@ -1,7 +1,7 @@
 body {
 	background-color: #282a36;
     color: #f8f8f2;
-    margin: 10px 15%;
+    margin: 20px 15%;
 }
 
 img, video {
@@ -36,7 +36,7 @@ pre code {
 }
 
 .card img, .card video {
-    
+
 }
 
 .wall {
@@ -52,7 +52,7 @@ pre code {
 .slideshow {
     display: flex;
     flex-wrap: nowrap;
-    overflow: scroll;
+    overflow: auto;
     gap: 1rem;
     justify-content: flex-start;
     align-items: center;
@@ -62,17 +62,18 @@ pre code {
 .slideshow .card,
 .slideshow img,
 .slideshow video {
-    flex: 0 0 400px;
-    aspect-ratio: 1 / 1;
+    width: 400px;
+    height: 400px;
     margin-bottom: 0;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    flex: 0 0 auto;
 }
 
 #microframe .card {
     width: 400px;
 }
 
-.anim-demo-controls {
+.anim-demo {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -82,25 +83,59 @@ pre code {
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.preset-buttons {
+
+.anim-demo .preset-buttons {
   display: flex;
   gap: 0.5rem;
 }
 
-.preset-buttons button {
+.anim-demo .preset-buttons button {
     flex: 1;
 }
 
-.css-editor {
+.anim-demo .variables {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.anim-demo .variables .variable-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.anim-demo .variables .variable-inputs label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.anim-demo .variables .variable-inputs label input {
+    flex: 1;
+    min-width: 50px;
+}
+
+.anim-demo .variables .css-editor {
+  flex: 1;
   font-family: monospace;
   resize: none;
   overflow: hidden;
+  min-width: 200px;
+  min-height: calc(8 * 1rem);
+  border-radius: 5px;
+  background-color: #282c34;
+  color: #abb2bf;
 }
 
-.anim-demo-controls .slideshow .card,
-.anim-demo-controls .slideshow img {
-    flex: 0 0 200px;
-    box-sizing: border-box;
-    aspect-ratio: 1 / 1;
-    margin-bottom: 0;
+.anim-demo .slideshow .card,
+.anim-demo .slideshow img {
+    width: 200px;
+    height: 200px;
+    text-align: center;
 }
+

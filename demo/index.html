@@ -199,7 +199,7 @@ function quickSort(arr, low, high) {
 	<img src="media/img6.jpg" alt="Images obviously still work very well."/>
 	<img src="media/gif2.gif" alt="As well as animated GIFs"/>
 	<video 
-		title="And videos." 
+		title="And videos. Notice how the video controls behave as usual and, shifting to the next gallery element pauses is." 
 		poster="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg">
 		<source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
 	</video>
@@ -213,49 +213,80 @@ Use ← / → to navigate
 	<div class="card microframe">
 		<h3>Counter</h3>
 		<p>The user also gets a counter at the bottom right corner of the viewport telling him where he is in the gallery</p>
+		<pre><code>6/6</code></pre>
 	</div>
 </div>
 
+<h2>Customization<h2>
+
+
 <h2>Customizable Slide Animations</h2>
-	<p>In gallery mode, Microframe.js initializes three panels: the active one centered in the viewport, and two hidden panels positioned on each side. The initial position of these hidden panels is defined entirely in CSS. Navigation animations are triggered by swapping CSS classes, letting the browser handle the transitions using GPU-accelerated transforms. There are no JavaScript-driven animations involved.</p>
-	<p>Because of this design, customizing the default animation is straightforward. You can directly edit
-	<code>.panel.staging-left</code> and <code>.panel.staging-right</code>, or, for simpler tweaks, adjust the provided CSS custom properties to quickly experiment with different effects.</p>
-	<p>The modifications you make below will apply to the whole page. To get back to the defaults, press the <code>Default</code> button.</p>
+<p>In gallery mode, microframe.js initializes three panels: the active one centered in the viewport, and two hidden panels positioned on each side. The initial position of these hidden panels is defined entirely in CSS. Navigation animations are triggered by swapping CSS classes, letting the browser handle the transitions using GPU-accelerated transforms. There are no JavaScript-driven animations involved.</p>
+<p>Because of this design, customizing the default animation is straightforward. You can directly edit
+<code>.panel.staging-left</code> and <code>.panel.staging-right</code>, or, for simpler tweaks, adjust the provided CSS custom properties to quickly experiment with different effects.</p>
+<p>The modifications you make below will apply to the whole page. To get back to the defaults, press the <code>Default</code> button.</p>
 
-	<section class="anim-demo-controls">
-		<div class="preset-buttons">
-			<button data-preset="default">Default</button>
-			<button data-preset="rotation">Slight Rotation</button>
-			<button data-preset="rotation3d">Subtle 3D Rotation</button>
-			<button data-preset="coverflow">Cover Flow</button>
-			<button data-preset="crazy">Crazy !</button>
-		</div>
+<section class="anim-demo">
+  <div class="preset-buttons">
+    <button data-preset="default">Default</button>
+    <button data-preset="rotation">Slight Rotation</button>
+    <button data-preset="rotation3d">Subtle 3D Rotation</button>
+    <button data-preset="coverflow">Cover Flow</button>
+    <button data-preset="crazy">Crazy !</button>
+  </div>
 
-		<textarea class="css-editor" spellcheck="false" rows="8">
+  <div class="variables">
+    <div class="variable-inputs">
+      <label>
+        Slide duration (s)
+        <input type="number" step="0.1" value="0.3" data-var="--slide-duration">
+      </label>
+      <label>
+        Panel offset X (vw)
+        <input type="number" step="1" value="50" data-var="--panel-offset-x">
+      </label>
+      <label>
+        Panel offset Y (%)
+        <input type="number" step="1" value="0" data-var="--panel-offset-y">
+      </label>
+      <label>
+        Panel scale
+        <input type="number" step="0.01" value="0.8" data-var="--panel-scale">
+      </label>
+      <label>
+        Panel rotation (deg)
+        <input type="number" step="1" value="0" data-var="--panel-rot">
+      </label>
+      <label>
+        Panel tilt (deg)
+        <input type="number" step="1" value="0" data-var="--panel-tilt">
+      </label>
+    </div>
+
+    <textarea class="css-editor" spellcheck="false" readonly>
 #microframe {
-  --slide-duration: 1s;
-  --panel-offset-x: 30vw;
-  --panel-offset-y: 0%;
-  --panel-scale: 1;
-  --panel-rot: 0deg;
-  --panel-tilt: 45deg;
+--slide-duration: 1s;
+--panel-offset-x: 30vw;
+--panel-offset-y: 0%;
+--panel-scale: 1;
+--panel-rot: 0deg;
+--panel-tilt: 45deg;
 }
-		</textarea>
+    </textarea>
+  </div>
 
-		<div class="slideshow gallery">
-			<div class="card microframe">
-				<p>Click here (or on any other gallery) to open microframe and see your animation settings !</p>
-			</div>
-			<img src="media/img2.jpg"/>
-			<img src="media/img3.jpg"/>
-			<img src="media/img4-1200w.jpg"/>
-			<img src="media/img5-600w.jpg"/>
-		</div>
+  <div class="slideshow gallery">
+    <div class="card microframe">
+      <p>Click on any element of this gallery (or open any gallery on this page) preview your animation settings !</p>
+    </div>
+    <img src="media/img2.jpg"/>
+    <img src="media/img3.jpg"/>
+    <img src="media/img4-1200w.jpg"/>
+    <img src="media/img5-600w.jpg"/>
+  </div>
 
-		<script src="./scripts/anim-demo.js"></script>
-	</section>
-
-
+  <script src="./scripts/anim-demo.js"></script>
+</section>
 
 <script type="module">
     import { initMicroframe } from '../microframe.js';
