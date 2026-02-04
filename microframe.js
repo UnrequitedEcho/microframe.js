@@ -19,7 +19,7 @@ class Microframe {
     // Create microframe main container and center panel
     this.microframe = document.createElement("div"); 
     this.microframe.id = "microframe";
-    this.panel = Microframe.createPanel(this.targetElement);
+    this.panel = Microframe.createPanel(this.targetElement, this.options.showLegend);
     this.panel.classList.add("center");
     this.microframe.appendChild(this.panel);
 
@@ -96,8 +96,8 @@ class Microframe {
     // Add legend if alt or title exists
     if (showLegend === "none") return panel; // no legend option
     const legendText =
-      this.options.showLegend === "image" && tag !== "img" ? null :
-      this.options.showLegend === "video" && tag !== "video" ? null :
+      showLegend === "image" && tag !== "img" ? null :
+      showLegend === "video" && tag !== "video" ? null :
       (media.alt || media.title)?.trim() || null;
     if (legendText) {
       const legend = document.createElement("div");
@@ -132,7 +132,7 @@ class MicroframeGallery extends Microframe{
     // Helper: create a panel for a side index or empty panel
     const createSidePanel = (index) => (
       index >= 0 && index < this.galleryElements.length
-        ? MicroframeGallery.createPanel(this.galleryElements[index])
+        ? MicroframeGallery.createPanel(this.galleryElements[index], this.options.showLegend)
         : MicroframeGallery.createPanel()
     );
 
@@ -242,7 +242,10 @@ class MicroframeGallery extends Microframe{
       this.displayPanels.shift()?.remove();
       this.displayPanels.push(
         this.galleryElements[this.currentIndex + 1]
-          ? MicroframeGallery.createPanel(this.galleryElements[this.currentIndex + 1])
+          ? MicroframeGallery.createPanel(
+            this.galleryElements[this.currentIndex + 1], 
+            this.options.showLegend
+          )
           : MicroframeGallery.createPanel()
         );
       appendPanel(this.displayPanels[2]);
@@ -251,7 +254,10 @@ class MicroframeGallery extends Microframe{
       this.displayPanels.pop()?.remove();
       this.displayPanels.unshift(
         this.galleryElements[this.currentIndex - 1]
-          ? MicroframeGallery.createPanel(this.galleryElements[this.currentIndex - 1])
+          ? MicroframeGallery.createPanel(
+            this.galleryElements[this.currentIndex - 1], 
+            this.options.showLegend
+          )
           : MicroframeGallery.createPanel()
         );
       appendPanel(this.displayPanels[0]);

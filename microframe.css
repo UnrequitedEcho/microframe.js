@@ -7,8 +7,6 @@
   --media-size: 90;                   /* Max media size (in vw / vh) */
 
   /* Gallery UI */
-  --hint-alpha: 1;                    /* Navigation hint opacity (0 to hide) */
-  --counter-alpha: 1;                 /* Image counter opacity (0 to hide) */
   --slide-duration: 0.3s;               /* Duration of slide + fade between panels */
 
   /* Side panel transforms
@@ -161,7 +159,7 @@ img, video, .microframe {
 }
 
 #microframe .counter.show {
-  opacity: var(--counter-opacity);
+  opacity: 1;
   transform: translateY(0);
 }
 
@@ -172,7 +170,7 @@ img, video, .microframe {
 }
 
 #microframe .nav-hint.show{
-  opacity: var(--hint-opacity);
+  opacity: 1;
   transform: translate(-50%, 0);
 }
 
