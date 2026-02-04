@@ -6,8 +6,9 @@
  */
 class Microframe {
 
-  constructor(element) {
+  constructor(element, options) {
     this.targetElement = element; // Element to show in the microframe
+    this.options = options;
   }
 
   open(){
@@ -66,7 +67,7 @@ class Microframe {
   }
 
   // Creates a panel for a given element or empty panel
-  static createPanel(element = null) {
+  static createPanel(element = null, showLegend = "all") {
     const panel = document.createElement("div");
     panel.className = "panel";
 
@@ -74,35 +75,39 @@ class Microframe {
 
     // Clone the element so original DOM is untouched
     const media = element.cloneNode(true);
+    const tag = media.tagName.toLowerCase();
 
-    // Handle media-specific attributes
-    if (media.tagName === "IMG") {
+    if (tag !== "img" && tag !== "video") {
+      panel.appendChild(media);
+      return panel
+    }
+
+    if (tag === "img") {
       media.sizes = "100vw";
       media.decoding = "async";
       media.loading = "eager";
-    } else if (media.tagName === "VIDEO") {
+    } else if (tag === "video") {
       media.controls = true;
       media.pause?.();
-    } else {
-      panel.appendChild(media); // Non-media content
-      return panel;
     }
 
-    panel.appendChild(media);
+    panel.appendChild(media); 
 
     // Add legend if alt or title exists
-    const legendText = (media.alt || media.title)?.trim();
+    if (showLegend === "none") return panel; // no legend option
+    const legendText =
+      this.options.showLegend === "image" && tag !== "img" ? null :
+      this.options.showLegend === "video" && tag !== "video" ? null :
+      (media.alt || media.title)?.trim() || null;
     if (legendText) {
       const legend = document.createElement("div");
       legend.className = "legend";
       legend.textContent = legendText;
       panel.appendChild(legend);
     }
-
     return panel;
   }
 }
-
 
 /**
  * MicroframeGallery
@@ -113,8 +118,8 @@ class Microframe {
  */
 class MicroframeGallery extends Microframe{
 
-  constructor(element){
-    super(element);
+  constructor(element, options){
+    super(element, options);
     // Collect all media elements in the gallery container
     const galleryElement = this.targetElement.closest(".gallery, .media-group");
     this.galleryElements = Array.from(galleryElement.querySelectorAll("img, video, .microframe"));
@@ -154,6 +159,7 @@ class MicroframeGallery extends Microframe{
 
   // Show temporary navigation hint for keyboard or touch
   initNavHint(){
+    if (!this.options.showNavHint) return;
     this.hint = document.createElement("div");
     this.hint.className = "nav-hint";
 
@@ -168,6 +174,7 @@ class MicroframeGallery extends Microframe{
 
   // Display counter showing current item / total
   initCounter(){
+    if (!this.options.showCounter) return;
     this.counter = document.createElement("div");
     this.counter.className = "counter";
     this.counter.textContent = `${this.currentIndex + 1}/${this.galleryElements.length}`
@@ -258,16 +265,25 @@ class MicroframeGallery extends Microframe{
   }
 }
 
-export function initMicroframe() {
+export function initMicroframe(userOptions = {}) {
+  const options = {
+    selector: "img, video, .microframe",
+    ignoreClass: "no-microframe",
+    gallerySelector: ".gallery, .media-group",
+    showNavHint: true,
+    showCounter: true,
+    showLegend: "all", // "all", "video", "image" or "none"
+    ...userOptions
+  }
   document.addEventListener("click", function (e) { // User clicks
     if (document.getElementById("microframe")) return; // Microframe is already open: exit
-    const target = e.target.closest("img, video, .microframe"); 
-    if (target && !target.classList.contains("no-microframe")){ // Click target is microframe-able
+    const target = e.target.closest(options.selector); 
+    if (target && !target.classList.contains(options.ignoreClass)){ // Click target is microframe-able
       e.preventDefault();
       let mf;
-      mf = target.closest(".gallery, .media-group") // Click target is in a gallery
-        ? new MicroframeGallery(target)
-        : new Microframe(target);
+      mf = target.closest(options.gallerySelector) // Click target is in a gallery
+        ? new MicroframeGallery(target, options)
+        : new Microframe(target, options);
       mf.open();
     }
   });
