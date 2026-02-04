@@ -9,28 +9,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/base16/onedark.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
     
-    <link rel="stylesheet" href="../microframe.css">
+    <link rel="stylesheet" href="../src/microframe.css">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<h1>Welcome to the microframe.js demonstration page</h1>
+<h1>microframe.js</h1>
 
-<p>microframe.js is a tiny (less than 4kB), dependency-free lightbox for images and galleries, written in pure JS. Try it and learn about it's features bolow!</p>
+<p>microframe.js is a <strong>small</strong>, <strong>lightweight</strong> and <strong>dependency-free</strong> lightbox and full-screen gallery effect for images, videos, and custom HTML content, written in <strong>vanilla JavaScript</strong>. It weighs in at around 2.5kB when gzipped (js + CSS), and the script itself is a single, self-contained file of roughly 300 lines of clean, object-oriented code, released under the <a href="https://opensource.org/license/mit">MIT License</a>.</p>
+
+<p>It has been tested across several desktop and mobile browsers, but it is not yet battle-tested and intentionally avoids the heavy defensive programming that would make it bullet-proof. In exchange, it is significantly easier to read and extend. Compared to <a href="https://biati-digital.github.io/glightbox/">GLightbox</a> or <a href="https://lokeshdhakar.com/projects/lightbox2/">Lightbox2</a>, microframe.js aims for a middle ground between the customizability and the completeness of features of the former and the  ease of use of the latter.</p>
+
+<p>It is designed to fit two main use cases: the small website or blog owner who wants a modern, stylish yet easily customizable lightbox for images and videos with minimal effort, and the developer who wants a clean, well-structured base for more complex projects.</p>
+
+
+<p>Try it below!</p>
+
+<hr>
 
 <h2>Single Media</h2>
 
 <div class="wall">
 	<div class="card">
 		<h3>Simple Image</h3>
-		<p>Clicking (or tapping on mobile) on the image will open microframe. Clicking (or tapping) anywhere, or pressing ESC will close microframe. Both opening and closing will happend with customizable smooth fade transition. This behavior is added by default to all the pictures and videos on the page.</p>
+		<p>Clicking (or tapping on mobile) any image will open it in microframe. While in the microframe, clicking (or tapping) anywhere, or pressing <kbd>ESC</kbd>, will close it. Both opening and closing use a smooth, customizable fade transition. This behavior is applied automatically to all images and videos on the page</p>
 		<img src="media/img1.jpg"/>
 		<pre><code>&lt;img src="url/img.jpg"/&gt;</code></pre>
 	</div>
 
 	<div class="card">
 		<h3>Caption</h3>
-		<p>By default, the alt text will be shown as a caption below the media. You can disable this with the options FIMXE</p>
-		<img src="media/img2.jpg" alt="White Flower"/>
+		<p>By default, microframe.js displays a caption below the media: for images it uses the <code>alt</code> text, and for videos it uses the <code>title</code> attribute. This can be easily disabled.</p>
+		<img src="media/img2.jpg" alt="Crystal Glass"/>
 <pre><code>&lt;img
   src="url/img.jpg"
   alt="caption" 
@@ -39,8 +48,8 @@
 	</div>
 
 	<div class="card">
-		<h3>Opt-out</h3>
-		<p>You can exclude media from being microframed with <code>class=no-microframe</code>. Click on the picture above: nothing happens</p>
+		<h3>Excludind Media</h3>
+		<p>By default, microframe.js will be triggered by a click on any media on the page. You can exclude specific elements from being microframed by adding <code>class="no-microframe"</code> to the element. Click on the image below: nothing happens. The class name that disables microframe is fully customizable.</p>
 		<img class="no-microframe" src="media/img3.jpg"/>
 <pre><code>&lt;img
   class="no-microframe"
@@ -51,7 +60,7 @@
 
 	<div class="card">
 		<h3>Videos</h3>
-		<p>microframe.js checks if the clicked element is a <code>&lt;img&gt;</code> or <code>&lt;video&gt;&lt;/video&gt;</code> and works with either. If you show <code>controls</code> on a video, those take priority over microframe and it won't show up.</p>
+		<p>microframe.js works seemlessly with both images (<code>&lt;img&gt;</code>) and videos (<code>&lt;video&gt;&lt;/video&gt;</code>). If a video has <code>controls</code> enabled, the browser's native controls take priority and it will not be microframed when clicked.</p>
 		<video poster="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg"><source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"></video>
 <pre><code>&lt;video poster="url/poster.jpg"&gt;
   &lt;source src="url/video.mp4"&gt;
@@ -72,8 +81,8 @@
 	</div>
 
 	<div class="card">
-		<h3>Smart Image Size</h3>
-		<p>If a single source is provided, the picture is shown at full resolution if the viewport is large enough. Otherwise, the picture is scaled down to fit, with some customizable margins.</p>
+		<h3>Automatic Scaling</h3>
+		<p>If a single image source is provided, it will display at full resolution if the viewport is large enough. On smaller screens, the image is automatically scaled down to fit, respecting customizable margins. You can override this behavior with some simple CSS.</p>
 		<img src="media/img5-orig.jpg" alt="Original picture resolution: 8192x5464"/>
 <pre><code>&lt;img
   src="url/img.jpg"
@@ -90,7 +99,7 @@
 
 	<div class="card">
 		<h3>Responsive Images</h3>
-		<p>If a <code>srcset</code> is provided, microframe.js will correctly let the browser choose the best one. Note the resolution of the image below. Microframe it! Now, narrow your browser window so that this website shows up as a single column. Microframe it again!</p>
+		<p>If a <code>srcset</code> is provided, microframe.js lets the browser automatically select the most appropriate source for the current viewport. Notice the resolution of the image below before opening it. Open it and look at the new resolution. Close it and narrow your browser window so the page displays as a single column, then open it again. microframe.js will use a smaller image size, but still big enough to fit the smaller viewport.</p>
 		<img
 			srcset="
 				media/img4-400w.jpg 400w,
@@ -116,14 +125,13 @@
 
 	<div class="card">
 		<h3>Dynamic Pointers on Desktop</h3>
-		<p>With the included <code>CSS</code>, the pointer stays informative. Hover over any media on this page, notice how it becomes <code>zoom-in</code> when microframe is available. Microframe any picture: the pointer becomes <code>zoom-out</code>. Microframe the available video. Notice how the pointer transforms to <code>zoom-out</code> anywhere on the windows, but stays standard over the video and controls.</p>
+		<p>With the included <code>CSS</code>, the pointer gives helpful visual cues. Hover over any media: the cursor changes to <code>zoom-in</code> when Microframe can be opened. Once a media element is microframed, the cursor becomes <code>zoom-out</code>. For videos, the cursor changes to <code>zoom-out</code> anywhere on the overlay, but remains the standard pointer when hovering directly over the video controls.</p>
 	</div>
 
 	<div class="card">
 		<h3>Arbitrary Content</h3>
-		<p>You can make any html block microframe-able by giving it the <code>class=microframe</code>. For this exemple, let's microframe a wide <code>&lt;pre&gt;&lt;code&gt;</code> block. Notice how the microframed version is widened to avoid having to scroll</p>
-<pre class="microframe language-javascript" ><code>
-// QuickSort Implementation in JavaScript
+		<p>Any HTML block can be made microframe-able by adding <code>class="microframe"</code>. For this example, we’ve applied it to a wide <code>&lt;pre&gt;&lt;code&gt;</code> block. Notice how the microframed version expands to fit the content, avoiding horizontal scrolling.</p>
+<pre class="microframe language-javascript" ><code>// QuickSort Implementation in JavaScript
 // This code sorts an array in ascending order using the QuickSort algorithm.
 
 /**
@@ -180,50 +188,145 @@ function quickSort(arr, low, high) {
 &lt;/code&gt;&lt;/pre&gt;
 </code></pre>
 	</div>
-
 </div>
 
+<hr>
 
 <h2>Gallery Mode</h2>
 
 <div class="slideshow gallery">
 	<div class="card microframe">
 		<h3>Gallery Mode</h3>
-		<p>Wrapping your media in a container that has <code>class = "gallery"</code> switches microframe in gallery mode. In this mode, you can use left and right arrow keys (or horizontal swipes on mobile) to go to the next media or microframe element. Click on this card and scroll through this slide show in microframe.js to take a tour of the basic features!</p>
+		<p>Wrapping your media in a container with <code>class="gallery"</code> (customizable) enables gallery mode. In this mode, you can use the left and right arrow keys (or swipe horizontally on mobile) to navigate between media elements.  Click on this card and browse through the slideshow to explore the basic features of gallery mode!</p>
 <pre><code>&lt;div class="gallery"&gt;
   &lt;img src="url/img1.jpg"/&gt;
   &lt;img src="url/img2.jpg"/&gt;
 &lt;/div&gt;
 </code></pre>
 	</div>
-	<img src="media/img6.jpg" alt="Images obviously still work very well."/>
-	<img src="media/gif2.gif" alt="As well as animated GIFs"/>
+	<img src="media/img6.jpg" alt="Images work seamlessly in gallery mode, just like when viewed individually."/>
+	<img src="media/gif2.gif" alt="Animated GIFs and other short looping clips work just as smoothly in gallery mode, playing automatically as you navigate."/>
 	<video 
-		title="And videos. Notice how the video controls behave as usual and, shifting to the next gallery element pauses is." 
+		title="Videos also work in gallery mode. Native video controls behave as usual, and navigating to the next or previous gallery element automatically pauses the current video." 
 		poster="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg">
 		<source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
 	</video>
 	<div class="card microframe">
 		<h3>Navigation Hint</h3>
-		<p>A small navigation hint text will appear at the bottom of your screen when you first open the gallery. The text shown is platform-specific. You can hide it in the options. By default, it will show for 5s or until the user starts navigating. Exit microframe and come back to see it in action!</p>
+		<p>When you first open a gallery, a small navigation hint appears at the bottom of the screen. The text is platform-specific and can be disabled using the options. By default, the hint shows for 5 seconds or until the user starts navigating. Close this microframe and reopen a gallery to see it in action!</p>
 <pre><code class="language-plaintext">Swipe left/right to navigate
 Use ← / → to navigate
 </code></pre>
 	</div>
 	<div class="card microframe">
 		<h3>Counter</h3>
-		<p>The user also gets a counter at the bottom right corner of the viewport telling him where he is in the gallery</p>
-		<pre><code>6/6</code></pre>
+		<p>A counter appears at the bottom-right corner of the viewport, showing your current position in the gallery and the total number of items.</p>
+		<pre><code class="language-plaintext">6/6</code></pre>
 	</div>
 </div>
 
-<h2>Customization<h2>
+<hr>
 
+<h2>Installation</h2>
+<p>Microframe.js is a lightweight ES Module. Copy both the JavaScript and CSS files to a convenient location in your project, then load them in your page or template. You can also use native ES Module import paths if your project supports them. Currently, there is no official CDN, so you need to host the files yourself or include them in your build system.</p>
+<pre><code>&lt;!-- HTML --&gt;
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="./path/to/microframe.css"&gt;
+&lt;/head&gt;
 
-<h2>Customizable Slide Animations</h2>
+&lt;body&gt;
+  &lt;script type="module"&gt;
+    import { initMicroframe } from './path/to/microframe.js';
+    initMicroframe(); // Initialize Microframe with default options
+  &lt;/script&gt;
+&lt;body&gt;</code></pre>
+
+<p>And you are done!</p>
+
+<hr>
+
+<h2>Configuration</h2>
+
+<p><code>initMicroframe()</code> accepts an optional configuration object. All options are optional - the defaults shown below will be used if omitted.</p>
+
+<pre><code>initMicroframe({
+  // Which elements can open Microframe when clicked
+  selector: "img, video, .microframe",
+
+  // Elements with this class will be ignored
+  ignoreClass: "no-microframe",
+
+  // Parent containers that should be treated as galleries
+  gallerySelector: ".gallery, .media-group",
+
+  // Show navigation hint on open
+  showNavHint: true,
+
+  // Show the current index (e.g. 3 / 12)
+  showCounter: true,
+
+  // Control when legends (alt / title text) are shown:
+  // "all"   -> images and videos
+  // "image" -> images only
+  // "video" -> videos only
+  // "none"  -> never show legends
+  showLegend: "all"
+});</code></pre>
+
+<p>Once initialized, a microframe will appear when you click or tap any element matching the selector. No additional setup is required, but you are welcome to tweak the CSS to match your site’s style. Common customizations include changing the fade-in/fade-out duration or limiting the maximum size of the microframed element. These settings are exposed as CSS custom properties for easy editing.<p>
+
+<pre><code>/* microframe.css */
+#microframe {
+  --anim-duration: 0.3s;              /* Fade duration for opening / closing */
+  --media-size: 90;                   /* Max media size (in vw / vh) */
+}</code></pre>
+
+<p>By default, microframed elements have <code>width: auto;</code> and <code>height: auto;</code>, allowing them to grow to fill the panel. You can override this behavior for specific elements by editing <code>#microframe .your-selector</code> in your website's CSS.
+</p></p>
+
+<div style="display: flex; gap: 1rem">
+	<div class="elem-shrink microframe">This element will shrink when microframed</div>
+	<div class="elem-stable microframe">This element will stay the same size when microframed</div>
+	<div class="elem-grow microframe">This element will grow when microframed</div>
+</div>
+
+<pre><code>&lt;!--html--&gt;
+
+&lt;div style="display: flex; gap: 1rem"&gt;
+	&lt;div class="elem-shrink microframe"&gt;This element will shrink when microframed&lt;/div&gt;
+	&lt;div class="elem-stable microframe"&gt;This element will stay the same size when microframed&lt;/div&gt;
+	&lt;div class="elem-grow microframe"&gt;This element will grow when microframed&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<pre><code>/* CSS */
+
+.elem-shrink,
+.elem-stable,
+.elem-grow {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    /* other irrelevant styling */
+}
+
+#microframe .elem-stable{
+    width: 200px;
+    height: 200px;
+}
+
+#microframe .elem-grow{
+    width: 100%;
+    height: 100%;
+}
+</code></pre>
+
+<hr>
+
+<h2>Customizable Gallery Animations</h2>
 <p>In gallery mode, microframe.js initializes three panels: the active one centered in the viewport, and two hidden panels positioned on each side. The initial position of these hidden panels is defined entirely in CSS. Navigation animations are triggered by swapping CSS classes, letting the browser handle the transitions using GPU-accelerated transforms. There are no JavaScript-driven animations involved.</p>
 <p>Because of this design, customizing the default animation is straightforward. You can directly edit
-<code>.panel.staging-left</code> and <code>.panel.staging-right</code>, or, for simpler tweaks, adjust the provided CSS custom properties to quickly experiment with different effects.</p>
+<code>.panel.staging-left</code> and <code>.panel.staging-right</code> for complex or assymetric effects, or, for simpler tweaks, adjust the provided CSS custom properties to quickly experiment.</p>
 <p>The modifications you make below will apply to the whole page. To get back to the defaults, press the <code>Default</code> button.</p>
 
 <section class="anim-demo">
@@ -279,17 +382,25 @@ Use ← / → to navigate
     <div class="card microframe">
       <p>Click on any element of this gallery (or open any gallery on this page) preview your animation settings !</p>
     </div>
-    <img src="media/img2.jpg"/>
-    <img src="media/img3.jpg"/>
-    <img src="media/img4-1200w.jpg"/>
-    <img src="media/img5-600w.jpg"/>
+    <img src="media/img7.jpg"/>
+    <img src="media/img8.jpg"/>
+    <img src="media/img9.jpg"/>
+    <img src="media/img10.jpg"/>
+    <img src="media/img11.jpg"/>
+    <img src="media/img12.jpg"/>
   </div>
 
   <script src="./scripts/anim-demo.js"></script>
 </section>
 
+<hr>
+
+<p style="font-size: 0.85rem; font-style: italic;">
+Special thanks to <a href="https://unsplash.com/@landolakesinc">Land O'Lakes, Inc.</a> and <a href="https://unsplash.com/@mineral_of_demon">Nastia Petruk</a> on unsplash.com for the images used in this demo, and to the <a href="https://www.blender.org/">Blender Foundation</a> for the videos.
+</p>
+
 <script type="module">
-	import { initMicroframe } from '../microframe.js';
+	import { initMicroframe } from '../src/microframe.js';
 	initMicroframe();
 </script>
 
@@ -298,11 +409,3 @@ Use ← / → to navigate
 </body>
 </html>
 
-
-<!--
-https://unsplash.com/@landolakesinc
-https://unsplash.com/@helloimnik
-https://unsplash.com/@dead__angel_
-https://unsplash.com/@eugenivy_now
-https://unsplash.com/@mineral_of_demon
--->
