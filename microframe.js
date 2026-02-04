@@ -217,6 +217,11 @@ class MicroframeGallery extends Microframe{
     if (nextIndex < 0 || nextIndex >= this.galleryElements.length) return;
     this.currentIndex = nextIndex;
 
+    // Pause if center panel is or has video
+    this.displayPanels[1].querySelectorAll("video").forEach(video => {
+      video.pause();
+    })
+
     // Append panels to the DOM in a hidden state, before they are assigned
     // their style with applyPanelClasses
     const appendPanel = (panel) => {
