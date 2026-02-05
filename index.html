@@ -228,26 +228,26 @@ Use ← / → to navigate
 <hr>
 
 <h2>Installation</h2>
-<p>Microframe.js is a lightweight ES Module. Grab the [latest release](https://github.com/UnrequitedEcho/microframe.js/releases), and copy both the JavaScript and CSS files to a convenient location in your project, then load them in your page or template. You can also use native ES Module import paths if your project supports them. Currently, there is no official CDN, so you need to host the files yourself or include them in your build system.</p>
+<p>Microframe.js is a lightweight ES Module. Link it in your html/template</p>
 <pre><code>&lt;!-- HTML --&gt;
 &lt;head&gt;
-  &lt;link rel="stylesheet" href="./path/to/microframe.min.css"&gt;
+  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/UnrequitedEcho/microframe.js/dist/microframe.min.css"&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
   &lt;script type="module"&gt;
-    import { initMicroframe } from './path/to/microframe.min.js';
-    initMicroframe(); // Initialize Microframe with default options
+    import { initMicroframe } from 'https://cdn.jsdelivr.net/gh/UnrequitedEcho/microframe.js/dist/microframe.min.js';
+    initMicroframe(); // Initialize microframe.js with default options
   &lt;/script&gt;
 &lt;body&gt;</code></pre>
 
-<p>And you are done!</p>
+<p>That's it!</p>
 
 <hr>
 
 <h2>Configuration</h2>
 
-<p><code>initMicroframe()</code> accepts an optional configuration object. All options are optional - the defaults shown below will be used if omitted.</p>
+<p><code>initMicroframe()</code> accepts an optional configuration object. All options are optional. The defaults shown below will be used if omitted.</p>
 
 <pre><code>initMicroframe({
   // Which elements can open Microframe when clicked
@@ -273,21 +273,53 @@ Use ← / → to navigate
   showLegend: "all"
 });</code></pre>
 
-<p>Once initialized, a microframe will appear when you click or tap any element matching the selector. No additional setup is required, but you are welcome to tweak the CSS to match your site’s style. Common customizations include changing the fade-in/fade-out duration or limiting the maximum size of the microframed element. These settings are exposed as CSS custom properties for easy editing.<p>
+<p>In addition, you can customize microframe.js’ appearance and behavior by overriding the default <code>microframe.css</code>, either by editing it directly if you host it yourself, or by including your own CSS after the default file.<p>
 
-<pre><code>/* microframe.css */
-#microframe {
-  --anim-duration: 0.3s;              /* Fade duration for opening / closing */
-  --media-size: 90;                   /* Max media size (in vw / vh) */
+<pre><code>&lt;head&gt;
+  &lt;!-- microframe CSS --&gt;
+  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/UnrequitedEcho/microframe.js/dist/microframe.min.css"&gt;
+  &lt;!-- Your overrides --&gt;
+  &lt;link rel="stylesheet" href="microframe-overrides.css"&gt;
+&lt;/head&gt;</pre></code>
+
+<p>Here are a few of the most useful settings.</p>
+
+<pre><code>#microframe {
+  /* Modal */
+  --anim-duration: 0.3s;                /* Fade duration for opening / closing */
+  --media-size: 90;                     /* Max media size (in vw / vh) */
+  background: rgba(0, 0, 0, 0.85        /* Modal background, semi-transparent by default */
+
+  /* Gallery UI */
+  --slide-duration: 0.3s;               /* Duration of slide + fade between panels */
+
+  /* Side panel transforms
+   These define the resting position of the hidden previous / next panels */
+  --panel-offset-x: 50vw;               /* Horizontal offset (0 = centered) */
+  --panel-offset-y: 0%;                 /* Vertical offset (0 = centered) */
+  --panel-scale: 0.8;                   /* Scale factor (1 = no scaling) */
+  --panel-rot: 0deg;                    /* 2D rotation (0deg = none) */
+  --panel-tilt: 0deg;                   /* 3D tilt angle (coverflow-style effect) */
+  perspective: 2000px;                  /* Change this for more/less perspective effect when using --panel-tilt*/
 }</code></pre>
 
-<p>By default, microframed elements have <code>width: auto;</code> and <code>height: auto;</code>, allowing them to grow to fill the panel. You can override this behavior for specific elements by editing <code>#microframe .your-selector</code> in your website's CSS.
-</p></p>
+<p>Look below for more on the slide animation properties. You can also easily customize the caption.</p>
+
+<pre><code>#microframe .panel .legend {
+  font-family: inherit;                 /* Caption font */
+  color: white;                         /* Caption color */
+  text-align: center;                   
+  margin-top: 10px;                     /* Space between the media and the caption */
+  text-shadow: 0 0 5px rgba(0,0,0,1);
+}</pre></code>
+
+<p>By default, microframed elements have <code>width: auto;</code> and <code>height: auto;</code>, allowing them to shrink as much as possible without scroll bars. You can override this behavior for specific elements/classes.
+</p>
 
 <div style="display: flex; gap: 1rem">
-	<div class="elem-shrink microframe">This element will shrink when microframed</div>
-	<div class="elem-stable microframe">This element will stay the same size when microframed</div>
-	<div class="elem-grow microframe">This element will grow when microframed</div>
+  <div class="elem-shrink microframe">This element will shrink when microframed</div>
+  <div class="elem-stable microframe">This element will stay the same size when microframed</div>
+  <div class="elem-grow microframe">This element will grow when microframed</div>
 </div>
 
 <pre><code>&lt;!--html--&gt;
@@ -325,8 +357,7 @@ Use ← / → to navigate
 
 <h2>Customizable Gallery Animations</h2>
 <p>In gallery mode, microframe.js initializes three panels: the active one centered in the viewport, and two hidden panels positioned on each side. The initial position of these hidden panels is defined entirely in CSS. Navigation animations are triggered by swapping CSS classes, letting the browser handle the transitions using GPU-accelerated transforms. There are no JavaScript-driven animations involved.</p>
-<p>Because of this design, customizing the default animation is straightforward. You can directly edit
-<code>.panel.staging-left</code> and <code>.panel.staging-right</code> for complex or assymetric effects, or, for simpler tweaks, adjust the provided CSS custom properties to quickly experiment.</p>
+<p>Customizing the default animation is very straightforward. In most case you should get your desired effect by overriding/editing the available CSS custom properties. For asymmetric or more complex effects, you can adjust <code>.panel.staging-left</code> and <code>.panel.staging-right</code>.</p>
 <p>The modifications you make below will apply to the whole page. To get back to the defaults, press the <code>Default</code> button.</p>
 
 <section class="anim-demo">
