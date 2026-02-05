@@ -18,7 +18,7 @@ Check out the [demo website](https://unrequitedecho.github.io/microframe.js/) to
 
 ## Installation
 
-Link <code>microframe.min.js<code> and <microframe.min.css> in your html or template. You can download the [latest release](https://github.com/UnrequitedEcho/microframe.js/releases) and host the files yourself or use a jsdelivr's CDN.
+Link `microframe.min.js` and `microframe.min.css` in your html or template. You can download the [latest release](https://github.com/UnrequitedEcho/microframe.js/releases) and host the files yourself or use a jsdelivr's CDN.
 
 ```html
 <head>
