@@ -228,15 +228,15 @@ Use ← / → to navigate
 <hr>
 
 <h2>Installation</h2>
-<p>Microframe.js is a lightweight ES Module. Copy both the JavaScript and CSS files to a convenient location in your project, then load them in your page or template. You can also use native ES Module import paths if your project supports them. Currently, there is no official CDN, so you need to host the files yourself or include them in your build system.</p>
+<p>Microframe.js is a lightweight ES Module. Grab the [latest release](https://github.com/UnrequitedEcho/microframe.js/releases), and copy both the JavaScript and CSS files to a convenient location in your project, then load them in your page or template. You can also use native ES Module import paths if your project supports them. Currently, there is no official CDN, so you need to host the files yourself or include them in your build system.</p>
 <pre><code>&lt;!-- HTML --&gt;
 &lt;head&gt;
-  &lt;link rel="stylesheet" href="./path/to/microframe.css"&gt;
+  &lt;link rel="stylesheet" href="./path/to/microframe.min.css"&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
   &lt;script type="module"&gt;
-    import { initMicroframe } from './path/to/microframe.js';
+    import { initMicroframe } from './path/to/microframe.min.js';
     initMicroframe(); // Initialize Microframe with default options
   &lt;/script&gt;
 &lt;body&gt;</code></pre>
