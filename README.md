@@ -5,6 +5,7 @@ microframe.js is a **small**, **lightweight** and **dependency-free** lightbox a
 It has been tested across several desktop and mobile browsers, but it is not yet battle-tested and intentionally avoids the heavy defensive programming that would make it bullet-proof. In exchange, it is significantly easier to read and extend. Compared to [GLightbox](https://biati-digital.github.io/glightbox/) or [Lightbox2](https://lokeshdhakar.com/projects/lightbox2/), microframe.js aims for a middle ground between the customizability and the completeness of features of the former and the ease of use of the latter.
 
 Check out the [demo website](https://unrequitedecho.github.io/microframe.js/) to learn more!
+Want to try it? See it at work on the [demo website](https://unrequitedecho.github.io/microframe.js/), or in the wild on my [blog](https://stacktracesofalife.com/)
 
 ## Features
 
