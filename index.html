@@ -32,14 +32,14 @@
 	<div class="card">
 		<h3>Simple Image</h3>
 		<p>Clicking (or tapping on mobile) any image will open it in microframe. While in the microframe, clicking (or tapping) anywhere, or pressing <kbd>ESC</kbd>, will close it. Both opening and closing use a smooth, customizable fade transition. This behavior is applied automatically to all images and videos on the page</p>
-		<img src="media/img1.jpg"/>
+		<img src="./demo/media/img1.jpg"/>
 		<pre><code>&lt;img src="url/img.jpg"/&gt;</code></pre>
 	</div>
 
 	<div class="card">
 		<h3>Caption</h3>
 		<p>By default, microframe.js displays a caption below the media: for images it uses the <code>alt</code> text, and for videos it uses the <code>title</code> attribute. This can be easily disabled.</p>
-		<img src="media/img2.jpg" alt="Crystal Glass"/>
+		<img src="./demo/media/img2.jpg" alt="Crystal Glass"/>
 <pre><code>&lt;img
   src="url/img.jpg"
   alt="caption" 
@@ -50,7 +50,7 @@
 	<div class="card">
 		<h3>Excludind Media</h3>
 		<p>By default, microframe.js will be triggered by a click on any media on the page. You can exclude specific elements from being microframed by adding <code>class="no-microframe"</code> to the element. Click on the image below: nothing happens. The class name that disables microframe is fully customizable.</p>
-		<img class="no-microframe" src="media/img3.jpg"/>
+		<img class="no-microframe" src="./demo/media/img3.jpg"/>
 <pre><code>&lt;img
   class="no-microframe"
   src="url/img.jpg"
@@ -76,20 +76,20 @@
 	<div class="card">
 		<h3>Animated GIFs</h3>
 		<p>Animated GIFs or other short looping clips work just as you'd expect.</p>
-		<img src="media/gif1.gif"/>
+		<img src="./demo/media/gif1.gif"/>
 		<pre><code>&lt;img src="url/gif.gif"/&gt;</code></pre>
 	</div>
 
 	<div class="card">
 		<h3>Automatic Scaling</h3>
 		<p>If a single image source is provided, it will display at full resolution if the viewport is large enough. On smaller screens, the image is automatically scaled down to fit, respecting customizable margins. You can override this behavior with some simple CSS.</p>
-		<img src="media/img5-orig.jpg" alt="Original picture resolution: 8192x5464"/>
+		<img src="./demo/media/img5-orig.jpg" alt="Original picture resolution: 8192x5464"/>
 <pre><code>&lt;img
   src="url/img.jpg"
   alt="Original picture resolution: 8192x5464" 
 /&gt;
 </code></pre>
-		<img src="media/img5-600w.jpg" alt="Original picture resolution: 600x400"/>
+		<img src="./demo/media/img5-600w.jpg" alt="Original picture resolution: 600x400"/>
 <pre><code>&lt;img
   src="url/img.jpg"
   alt="Original picture resolution: 600x400" 
@@ -102,12 +102,12 @@
 		<p>If a <code>srcset</code> is provided, microframe.js lets the browser automatically select the most appropriate source for the current viewport. Notice the resolution of the image below before opening it. Open it and look at the new resolution. Close it and narrow your browser window so the page displays as a single column, then open it again. microframe.js will use a smaller image size, but still big enough to fit the smaller viewport.</p>
 		<img
 			srcset="
-				media/img4-400w.jpg 400w,
-				media/img4-1200w.jpg 1200w,
-				media/img4-2000w.jpg 2000w
+				./demo/media/img4-400w.jpg 400w,
+				./demo/media/img4-1200w.jpg 1200w,
+				./demo/media/img4-2000w.jpg 2000w
 			"
 			sizes="400px"
-			src="media/img4-400w.jpg"
+			src="./demo/media/img4-400w.jpg"
 			alt="Notice the picture size (bottom right corner)"
 		/>
 <pre><code>&lt;img
@@ -204,8 +204,8 @@ function quickSort(arr, low, high) {
 &lt;/div&gt;
 </code></pre>
 	</div>
-	<img src="media/img6.jpg" alt="Images work seamlessly in gallery mode, just like when viewed individually."/>
-	<img src="media/gif2.gif" alt="Animated GIFs and other short looping clips work just as smoothly in gallery mode, playing automatically as you navigate."/>
+	<img src="./demo/media/img6.jpg" alt="Images work seamlessly in gallery mode, just like when viewed individually."/>
+	<img src="./demo/media/gif2.gif" alt="Animated GIFs and other short looping clips work just as smoothly in gallery mode, playing automatically as you navigate."/>
 	<video 
 		title="Videos also work in gallery mode. Native video controls behave as usual, and navigating to the next or previous gallery element automatically pauses the current video." 
 		poster="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg">
@@ -382,12 +382,12 @@ Use ← / → to navigate
     <div class="card microframe">
       <p>Click on any element of this gallery (or open any gallery on this page) preview your animation settings !</p>
     </div>
-    <img src="media/img7.jpg"/>
-    <img src="media/img8.jpg"/>
-    <img src="media/img9.jpg"/>
-    <img src="media/img10.jpg"/>
-    <img src="media/img11.jpg"/>
-    <img src="media/img12.jpg"/>
+    <img src="./demo/media/img7.jpg"/>
+    <img src="./demo/media/img8.jpg"/>
+    <img src="./demo/media/img9.jpg"/>
+    <img src="./demo/media/img10.jpg"/>
+    <img src="./demo/media/img11.jpg"/>
+    <img src="./demo/media/img12.jpg"/>
   </div>
 
   <script src="./demo/scripts/anim-demo.js"></script>
